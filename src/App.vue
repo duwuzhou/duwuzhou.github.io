@@ -4,6 +4,7 @@ import 'vue-fullpage.js/dist/style.css'
 import 'fullpage.js/dist/fullpage.css'
 import '@/assets/css/Animation.css'
 import 'animate.css';
+import { fetchBlogArticles, BlogArticle } from './api/blog';
 const bk = ref(false)
 const sy = ref(true)
 
@@ -31,32 +32,30 @@ const introText2 = ref('')
 const introText3 = ref('')
 
 // 博客列表数据
-const blogList = ref([
-  {
-    title: '雨天的thoughts',
-    summary: '雨滴敲打窗棂的声音，总是能勾起我无尽的思绪...',
-    date: '2023-11-15',
-    tags: ['随笔', '生活']
-  },
-  {
-    title: 'Vue3 组合式API实践',
-    summary: '探索Vue3组合式API的优势及实际应用场景，提升代码复用性和可维护性...',
-    date: '2023-10-28',
-    tags: ['技术', 'Vue3']
-  },
-  {
-    title: '旅行中的偶遇',
-    summary: '在陌生的城市里，有时一次偶然的相遇会带来意想不到的惊喜...',
-    date: '2023-09-20',
-    tags: ['旅行', '随笔']
-  },
-  {
-    title: 'TypeScript类型体操实战',
-    summary: '深入TypeScript类型系统，解析常见的类型编程技巧和实用模式...',
-    date: '2023-08-15',
-    tags: ['技术', 'TypeScript']
+const blogList = ref<BlogArticle[]>([])
+
+// 加载状态
+const isLoading = ref(false)
+
+// 错误信息
+const errorMessage = ref('')
+
+// 获取博客文章数据
+const fetchBlogData = async () => {
+  isLoading.value = true
+  errorMessage.value = ''
+  try {
+    const articles = await fetchBlogArticles()
+    console.log(articles);
+    
+    blogList.value = articles
+  } catch (error) {
+    console.error('获取博客文章失败:', error)
+    errorMessage.value = '获取博客文章失败，请稍后再试'
+  } finally {
+    isLoading.value = false
   }
-])
+}
 
 const moveSectionDown = () => {
   sy.value=false
@@ -64,11 +63,13 @@ const moveSectionDown = () => {
 }
 
 onMounted(() => {
-
   // 个人介绍动画
   setTimeout(() => typeWriter(introText, '心中依旧孤独'), 500)
   setTimeout(() => typeWriter(introText2, '雨落在心里'), 1500)
   setTimeout(() => typeWriter(introText3, 'ovo'), 2000)
+  
+  // 获取博客文章数据
+  fetchBlogData()
 })
 
 
@@ -222,7 +223,24 @@ onMounted(() => {
     <div v-if="bk" class="section animate__bounceIn">
       <div class="content">
         <h2>博客文章</h2>
-        <div class="blog-list">
+        
+        <!-- 加载中状态 -->
+        <div v-if="isLoading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <p>正在加载博客文章...</p>
+        </div>
+        
+        <!-- 错误信息 -->
+        <div v-else-if="errorMessage" class="error-message">
+          <p>{{ errorMessage }}</p>
+          <button @click="fetchBlogData" class="retry-button">重试</button>
+        </div>
+        
+        <!-- 博客列表 -->
+        <div v-else class="blog-list">
+          <div v-if="blogList.length === 0" class="no-data">
+            <p>暂无博客文章</p>
+          </div>
           <div class="blog-item" v-for="(blog, index) in blogList" :key="index">
             <h3>{{ blog.title }}</h3>
             <p>{{ blog.summary }}</p>
@@ -475,5 +493,77 @@ onMounted(() => {
   background-image: url('/images/image.png');
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+  // 加载状态样式
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 180, 216, 0.2);
+    border-radius: 50%;
+    border-top-color: #00b4d8;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+  }
+  
+  p {
+    color: #666;
+    font-size: 1.1em;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// 错误信息样式
+.error-message {
+  text-align: center;
+  padding: 30px;
+  background: rgba(255, 235, 235, 0.8);
+  border-radius: 8px;
+  margin: 20px 0;
+  
+  p {
+    color: #e74c3c;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+  }
+  
+  .retry-button {
+    background: linear-gradient(45deg, #00b4d8, #90e0ef);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 180, 216, 0.3);
+    }
+  }
+}
+
+// 无数据状态
+.no-data {
+  text-align: center;
+  padding: 40px 0;
+  width: 100%;
+  
+  p {
+    color: #999;
+    font-size: 1.1em;
+  }
 }
 </style>

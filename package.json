@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist -b gh-pages"
   },
   "dependencies": {
+    "@types/axios": "^0.9.36",
     "animate.css": "^4.1.1",
+    "axios": "^1.8.4",
     "vue": "^3.5.13"
   },
   "devDependencies": {
