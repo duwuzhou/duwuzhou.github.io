@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   // 如果你的仓库名是 username.github.io，使用 './'
   // 如果是其他仓库名，使用 '/your-repo-name/'
-  base: '/duwuzhou.github.io',
+  base: '/duwuzhou.github.io/',
   plugins: [vue()],
   resolve: {
     alias: {
