@@ -64,8 +64,8 @@ const moveSectionDown = () => {
 
 onMounted(() => {
   // 个人介绍动画
-  setTimeout(() => typeWriter(introText, '心中依旧孤独'), 500)
-  setTimeout(() => typeWriter(introText2, '雨落在心里'), 1500)
+  setTimeout(() => typeWriter(introText, '心中依旧孤独,雨落在心里'), 500)
+  setTimeout(() => typeWriter(introText2, '过去始终是过去,但是已经发生'), 1500)
   setTimeout(() => typeWriter(introText3, 'ovo'), 2000)
   
   // 获取博客文章数据
@@ -251,6 +251,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      
     </div>
 
     <!-- 项目展示

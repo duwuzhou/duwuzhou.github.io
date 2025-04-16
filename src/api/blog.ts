@@ -2,7 +2,7 @@ import axios from 'axios';
 // 需要安装 axios 依赖: npm install axios @types/axios
 
 // 博客文章接口URL
-const BLOG_API_URL = 'https://duwuzhou-bk.vercel.app/articles';
+const BLOG_API_URL = 'https://duwuzhou-dh.vercel.app/articles';
 
 // 博客文章类型定义
 export interface BlogArticle {
