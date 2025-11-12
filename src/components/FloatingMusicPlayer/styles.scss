@@ -1,0 +1,587 @@
+/* 基础样式 */
+:root {
+  --primary-color: #f0f0f0;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --bg-primary: rgba(30, 30, 30, 0.95);
+  --bg-secondary: rgba(40, 40, 40, 0.85);
+  --bg-tertiary: rgba(0, 0, 0, 0.3);
+  --shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  --transition: all 0.3s ease;
+}
+
+.icon {
+  font-style: normal;
+  font-weight: normal;
+  display: inline-block;
+  text-decoration: none;
+  width: 1em;
+  text-align: center;
+}
+
+.icon-play::before { content: "▶"; }
+.icon-pause::before { content: "⏸"; }
+.icon-prev::before { content: "⏮"; }
+.icon-next::before { content: "⏭"; }
+.icon-volume::before { content: "🔊"; }
+.icon-mute::before { content: "🔇"; }
+.icon-autoplay-on::before { content: "🔄"; }
+.icon-autoplay-off::before { content: "⏹"; }
+.icon-lyrics-on::before { content: "📜"; }
+.icon-lyrics-off::before { content: "🎵"; }
+.icon-expand::before { content: "⬆"; }
+.icon-collapse::before { content: "⬇"; }
+.icon-no-lyrics::before { content: "❌"; }
+
+/* 播放器容器 */
+.floating-music-player {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px; /* 减小整体宽度 */
+  height: 450px; /* 设置固定高度 */
+  background-color: var(--bg-primary);
+  border-radius: 16px; /* 增加圆角 */
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+  z-index: 1000;
+  overflow: hidden;
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: grab;
+  backdrop-filter: blur(10px); /* 添加背景模糊效果 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框 */
+  display: flex;
+  flex-direction: column;
+  transform-origin: bottom right; /* 设置变换原点为右下角 */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 只为宽度、高度和圆角添加过渡 */
+}
+
+/* 确保拖拽状态下也使用右下角作为变换原点 */
+.floating-music-player.dragging-player {
+  transform-origin: bottom right !important;
+  cursor: grabbing;
+  z-index: 1001;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 确保播放状态下也使用右下角作为变换原点 */
+.floating-music-player.playing {
+  transform-origin: bottom right !important;
+}
+
+/* 确保收起状态下也使用右下角作为变换原点 */
+.floating-music-player.collapsed {
+  transform-origin: bottom right !important;
+}
+
+/* 确保播放状态下也使用右下角作为变换原点 */
+.floating-music-player.playing {
+  transform-origin: bottom right !important;
+}
+
+/* 确保收起状态下也使用右下角作为变换原点 */
+.floating-music-player.collapsed {
+  transform-origin: bottom right !important;
+}
+
+
+
+.player-container {
+  padding: 12px; /* 减小内边距 */
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  height: 100%; /* 确保容器占满整个高度 */
+  overflow: hidden; /* 防止内容溢出 */
+  transform-origin: bottom right; /* 设置变换原点为右下角 */
+}
+
+.player-container.collapsed {
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom right; /* 设置变换原点为右下角 */
+}
+
+/* 专辑封面 */
+.album-cover {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 75%; /* 增大高度比例，从60%改为75% */
+  border-radius: 12px; /* 增加圆角 */
+  overflow: hidden;
+  margin-bottom: 12px; /* 减小间距 */
+  cursor: pointer;
+  flex-shrink: 0; /* 防止收缩 */
+}
+
+.album-cover img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); /* 增加渐变强度 */
+}
+
+.play-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.play-button .icon {
+  font-size: 32px; /* 减小图标 */
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6); /* 增加背景不透明度 */
+  width: 56px; /* 减小按钮尺寸 */
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-cover:hover .play-button {
+  opacity: 1;
+}
+
+/* 歌曲信息 */
+.song-info {
+  position: relative;
+  flex-shrink: 0; /* 防止收缩 */
+}
+
+.song-meta {
+  margin-bottom: 10px; /* 减小间距 */
+}
+
+.song-title {
+  font-size: 16px; /* 减小字体 */
+  font-weight: 700;
+  margin-bottom: 4px; /* 减小间距 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.song-artist {
+  font-size: 14px; /* 减小字体 */
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 歌词按钮 */
+.lyrics-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px; /* 减小图标 */
+  cursor: pointer;
+  padding: 6px; /* 减小点击区域 */
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  z-index: 10;
+}
+
+.lyrics-toggle:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* 歌词容器 - 增加拖动区域和背景样式 */
+.lyrics-container {
+  margin: 10px 0 12px; /* 减小间距 */
+  padding: 10px; /* 减小内边距 */
+  background-color: var(--bg-tertiary);
+  border-radius: 12px; /* 增加圆角 */
+  height: 120px; /* 设置固定高度 */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框 */
+  flex-shrink: 0; /* 防止收缩 */
+}
+
+.lyrics-container::-webkit-scrollbar {
+  width: 6px; /* 减小滚动条宽度 */
+}
+
+.lyrics-container::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 3px;
+}
+
+.lyrics-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 歌词加载状态 */
+.lyrics-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0; /* 减小内边距 */
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 20px; /* 减小加载指示器 */
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s linear infinite;
+  margin-bottom: 8px; /* 减小间距 */
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 当前歌词 */
+.current-lyric-container {
+  margin-bottom: 12px; /* 减小间距 */
+  padding-bottom: 10px; /* 减小内边距 */
+  border-bottom: 1px solid rgba(255,255,255,0.15); /* 增加边框不透明度 */
+}
+
+.current-lyric {
+  font-size: 16px; /* 减小字体 */
+  line-height: 1.6;
+  margin-bottom: 8px; /* 减小间距 */
+  text-align: center;
+  font-weight: 500;
+}
+
+.highlighted-text {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(29, 185, 84, 0.4); /* 增加光晕效果 */
+}
+
+.remaining-text {
+  color: var(--text-secondary);
+}
+
+.lyric-progress-bar {
+  height: 3px; /* 增加进度条高度 */
+  background-color: rgba(255,255,255,0.15); /* 增加背景不透明度 */
+  border-radius: 1.5px;
+  margin: 8px auto; /* 减小间距 */
+  width: 80%;
+  overflow: hidden;
+}
+
+.lyric-progress {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.1s linear;
+}
+
+/* 歌词文本 */
+.lyrics-text {
+  font-size: 14px; /* 减小字体 */
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin: 6px 0; /* 减小间距 */
+  padding: 4px 8px; /* 减小内边距 */
+  border-radius: 6px; /* 增加圆角 */
+  transition: var(--transition);
+}
+
+.lyrics-text.active {
+  color: var(--text-primary);
+  font-weight: 500;
+  background-color: rgba(255,255,255,0.08); /* 增加背景不透明度 */
+}
+
+.lyrics-text.previous {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.lyrics-text.next {
+  opacity: 0.7;
+}
+
+.no-lyrics {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0; /* 减小内边距 */
+  color: var(--text-secondary);
+}
+
+.no-lyrics .icon {
+  font-size: 20px; /* 减小图标 */
+  margin-bottom: 8px; /* 减小间距 */
+}
+
+/* 进度条 */
+.progress-container {
+  margin-bottom: 12px; /* 减小间距 */
+  flex-shrink: 0; /* 防止收缩 */
+  padding: 8px 0; /* 增加上下内边距，扩大点击区域 */
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px; /* 增加进度条高度，从4px改为8px */
+  background-color: rgb(0, 0, 0,0.4); /* 增加背景不透明度 */
+  border-radius: 4px; /* 增加圆角，与高度匹配 */
+  cursor: pointer;
+  position: relative;
+  margin: 6px 0; /* 减小间距 */
+}
+
+.progress {
+  height: 100%;
+  background-color: rgb(255, 255, 255);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.progress-handle {
+  position: absolute;
+  top: 50%;
+  width: 16px; /* 增加拖动点大小，从10px改为16px */
+  height: 16px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: var(--transition);
+  pointer-events: auto; /* 确保拖动点可以接收鼠标事件 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* 添加阴影，提高可见性 */
+}
+
+.progress-bar:hover .progress-handle,
+.progress-handle.dragging {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.progress-handle.dragging {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px; /* 减小字体 */
+  color: var(--text-tertiary);
+  margin-top: 4px; /* 减小间距 */
+}
+
+/* 控制按钮 */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px; /* 减小间距 */
+  margin-bottom: 8px; /* 添加底部边距 */
+  flex-shrink: 0; /* 防止收缩 */
+}
+
+.controls button {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 18px; /* 减小图标 */
+  cursor: pointer;
+  padding: 6px; /* 减小点击区域 */
+  border-radius: 50%;
+  transition: var(--transition);
+  flex: 1;
+  max-width: 36px; /* 减小按钮尺寸 */
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+
+
+/* 主播放按钮特殊样式 */
+.controls button:nth-child(3) {
+  background-color: var(--primary-color);
+  color: white;
+  max-width: 42px; /* 减小按钮尺寸 */
+  height: 42px;
+}
+
+.controls button:nth-child(3):hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* 收起/展开按钮 */
+.toggle-button {
+  width: 100%;
+  padding: 6px 0; /* 减小内边距 */
+  background-color: var(--bg-secondary);
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 12px; /* 减小字体 */
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0; /* 防止收缩 */
+  margin-top: auto; /* 确保按钮始终在底部 */
+}
+
+.toggle-button:hover {
+  background-color: rgba(50, 50, 50, 0.8);
+}
+
+/* 收起状态时调整按钮位置 */
+.collapsed .toggle-button {
+  position: absolute;
+  bottom: 0; /* 改为底部对齐 */
+  right: 0; /* 改为右侧对齐 */
+  width: 20px; /* 减小宽度 */
+  height: 20px; /* 减小高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5); /* 添加半透明背景 */
+  border-radius: 50%;
+}
+
+.collapsed .toggle-button .icon {
+  font-size: 10px; /* 减小图标大小 */
+}
+
+/* 收起状态 */
+.collapsed {
+  width: 50px; /* 减小收起状态尺寸 */
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  transform-origin: bottom right; /* 设置变换原点为右下角 */
+}
+
+/* 迷你播放器 */
+.mini-player {
+  position: absolute;
+  bottom: 0; /* 改为底部对齐 */
+  right: 0; /* 改为右侧对齐 */
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 5; /* 确保在toggle-button下方 */
+  transform-origin: bottom right; /* 设置变换原点为右下角 */
+}
+
+.collapsed .mini-player {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mini-cover {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.mini-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+.mini-player:hover .mini-play-icon, .mini-play-icon.playing {
+  opacity: 1;
+}
+
+.mini-play-icon .icon {
+  color: white;
+  font-size: 18px; /* 减小图标 */
+}
+
+.mini-player:hover .mini-play-icon {
+  opacity: 1;
+}
+
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .floating-music-player {
+    width: 260px; /* 减小小屏幕宽度 */
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  .collapsed {
+    width: 45px; /* 减小小屏幕收起状态尺寸 */
+    height: 45px;
+  }
+  
+  .lyrics-container {
+    max-height: 160px; /* 减小小屏幕歌词区域高度 */
+  }
+  
+  .current-lyric {
+    font-size: 14px;
+  }
+  
+  .lyrics-text {
+    font-size: 12px;
+  }
+}
+
+.mini-play-icon.playing {
+  opacity: 1;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.collapsed .mini-cover img {
+  animation: spin 4s linear infinite;
+  animation-play-state: paused;
+}
+
+.collapsed.playing .mini-cover img {
+  animation-play-state: running;
+}

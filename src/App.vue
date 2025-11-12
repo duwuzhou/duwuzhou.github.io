@@ -1,570 +1,257 @@
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import 'vue-fullpage.js/dist/style.css'
-import 'fullpage.js/dist/fullpage.css'
-import '@/assets/css/Animation.css'
-import 'animate.css';
-import { fetchBlogArticles, BlogArticle } from './api/blog';
-const bk = ref(false)
-const sy = ref(true)
-
-const typeWriter = (target: any, text: string, index: number = 0, speed: number = 100) => {
-  let currentText = ''
-  let charIndex = 0
-
-  const timer = setInterval(() => {
-    if (charIndex < text.length) {
-      currentText += text[charIndex]
-      if (Array.isArray(target.value)) {
-        target.value[index] = currentText
-      } else {
-        target.value = currentText
-      }
-      charIndex++
-    } else {
-      clearInterval(timer)
-    }
-  }, speed)
-}
-
-const introText = ref('')
-const introText2 = ref('')
-const introText3 = ref('')
-
-// 博客列表数据
-const blogList = ref<BlogArticle[]>([])
-
-// 加载状态
-const isLoading = ref(false)
-
-// 错误信息
-const errorMessage = ref('')
-
-// 获取博客文章数据
-const fetchBlogData = async () => {
-  isLoading.value = true
-  errorMessage.value = ''
-  try {
-    const articles = await fetchBlogArticles()
-    console.log(articles);
-    
-    blogList.value = articles
-  } catch (error) {
-    console.error('获取博客文章失败:', error)
-    errorMessage.value = '获取博客文章失败，请稍后再试'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const moveSectionDown = () => {
-  sy.value=false
-  bk.value=true
-}
-
-onMounted(() => {
-  // 个人介绍动画
-  setTimeout(() => typeWriter(introText, '心中依旧孤独,雨落在心里'), 500)
-  setTimeout(() => typeWriter(introText2, '过去始终是过去,但是已经发生'), 1500)
-  setTimeout(() => typeWriter(introText3, 'ovo'), 2000)
-  
-  // 获取博客文章数据
-  fetchBlogData()
-})
-
-
-// 实现下雨动画效果
-onMounted(() => {
-  const canvas = document.getElementById('bgCanvas') as HTMLCanvasElement
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  // 设置画布尺寸
-  const resizeCanvas = () => {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-  }
-  resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
-
-  // 定义雨滴类
-  class RainDrop {
-    x: number
-    y: number
-    length: number
-    speed: number
-    opacity: number
-    size: number
-
-    constructor() {
-      this.x = Math.random() * canvas.width
-      this.y = Math.random() * canvas.height - canvas.height
-      this.length = Math.random() * 30 + 15
-      this.speed = Math.random() * 15 + 8
-      this.opacity = Math.random() * 0.4 + 0.1
-      this.size = Math.random() * 2 + 1
-    }
-
-    update() {
-      this.y += this.speed
-      if (this.y > canvas.height) {
-        this.y = -this.length
-        this.x = Math.random() * canvas.width
-        // 添加涟漪效果
-        if (Math.random() > 0.95) {
-          createRipple(this.x, canvas.height)
-        }
-      }
-    }
-
-    draw() {
-      if (!ctx) return
-      ctx.beginPath()
-      ctx.moveTo(this.x, this.y)
-      ctx.lineTo(this.x, this.y + this.length)
-      ctx.strokeStyle = `rgba(144, 224, 239, ${this.opacity})`
-      ctx.lineWidth = this.size
-      ctx.stroke()
-    }
-  }
-
-  // 涟漪效果类
-  class Ripple {
-    x: number
-    y: number
-    radius: number
-    opacity: number
-
-    constructor(x: number, y: number) {
-      this.x = x
-      this.y = y
-      this.radius = 1
-      this.opacity = 0.6
-    }
-
-    update() {
-      this.radius += 1.5
-      this.opacity -= 0.03
-      return this.opacity > 0
-    }
-
-    draw() {
-      if (!ctx) return
-      ctx.beginPath()
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-      ctx.strokeStyle = `rgba(144, 224, 239, ${this.opacity})`
-      ctx.lineWidth = 1
-      ctx.stroke()
-    }
-  }
-
-  // 创建涟漪
-  const ripples: Ripple[] = []
-  function createRipple(x: number, y: number) {
-    ripples.push(new Ripple(x, y))
-  }
-
-  // 创建雨滴数组
-  const raindrops: RainDrop[] = []
-  const raindropCount = 200
-  for (let i = 0; i < raindropCount; i++) {
-    raindrops.push(new RainDrop())
-  }
-
-  // 动画循环
-  const animate = () => {
-    if (!ctx) return
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-    // 更新和绘制所有雨滴
-    raindrops.forEach(raindrop => {
-      raindrop.update()
-      raindrop.draw()
-    })
-
-    // 更新和绘制所有涟漪
-    for (let i = ripples.length - 1; i >= 0; i--) {
-      if (!ripples[i].update()) {
-        ripples.splice(i, 1)
-      } else {
-        ripples[i].draw()
-      }
-    }
-
-    requestAnimationFrame(animate)
-  }
-
-  animate()
-})
-
-</script>
-
 <template>
-<div class="background-container"></div>
-  <div  id="fullpage">
-    <!-- 首页/个人介绍 -->
-    <div v-if="sy" class="section">
-      <div class="content">
-        <h1>欢迎来到这里</h1>
-        <div class="intro">
-          <h3>{{ introText }}<span class="cursor">|</span></h3>
-          <p>{{ introText2 }}</p>
-          <P>{{ introText3 }}</P>
-         <canvas id="bgCanvas" class="background-canvas"></canvas>
-        </div>
-      </div>
-      <div class="scroll-down-btn" @click="moveSectionDown">
-        <div class="arrow"></div>
-      </div>
-    </div>
+  <div class="app-container">
+    <transition name="sci-fi-entrance">
+      <SciFiDiamondBackground/>
+    </transition>
+    <NavigationBar />
+    <RouterView class="router-view" />
+    <Snowfall />
+    <FloatingMusicPlayer :songs="songs" />
 
-    <!-- 博客列表 -->
-    <div v-if="bk" class="section animate__bounceIn">
-      <div class="content">
-        <h2>博客文章</h2>
-        
-        <!-- 加载中状态 -->
-        <div v-if="isLoading" class="loading-container">
-          <div class="loading-spinner"></div>
-          <p>正在加载博客文章...</p>
-        </div>
-        
-        <!-- 错误信息 -->
-        <div v-else-if="errorMessage" class="error-message">
-          <p>{{ errorMessage }}</p>
-          <button @click="fetchBlogData" class="retry-button">重试</button>
-        </div>
-        
-        <!-- 博客列表 -->
-        <div v-else class="blog-list">
-          <div v-if="blogList.length === 0" class="no-data">
-            <p>暂无博客文章</p>
-          </div>
-          <div class="blog-item" v-for="(blog, index) in blogList" :key="index">
-            <h3>{{ blog.title }}</h3>
-            <p>{{ blog.summary }}</p>
-            <div class="blog-footer">
-              <span class="date">{{ blog.date }}</span>
-              <span class="tag" v-for="(tag, i) in blog.tags" :key="i">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    </div>
+    <GifDisplay
+        class="gif-display"
+        :src="GIf"
+        width="260px"
+        height="180px"
+    />
 
-    <!-- 项目展示
-    <div class="section">
-      <div class="content">
-        <h2>项目展示</h2>
-        <div class="project-list">
-          <div class="project-item" v-for="i in 3" :key="i">
-            <h3>项目 {{ i }}</h3>
-            <p>项目描述和主要技术栈...</p>
-            <div class="tech-stack">
-              <span>Vue</span>
-              <span>TypeScript</span>
-              <span>Node.js</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
+    <GifDisplay
+        class="gif-display1"
+        :src="GIf1"
+        width="260px"
+    />
 
-    <!-- 联系方式
-    <div class="section">
-      <div class="content">
-        <h2>联系我</h2>
-        <div class="contact-info">
-          <p>Email: example@email.com</p>
-          <p>GitHub: github.com/example</p>
-        </div>
-      </div>
-    </div> -->
+
   </div>
 </template>
 
-<style lang="scss" scoped>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import GifDisplay from './components/GifDisplay.vue'
+import SciFiDiamondBackground from './components/SciFiDiamondBackground.vue'
+import NavigationBar from './components/NavigationBar.vue'
+// import FloatingMusicPlayer from './components/FloatingMusicPlayer.vue'
+import FloatingMusicPlayer from './components/FloatingMusicPlayer/FloatingMusicPlayer.vue'
+import Snowfall from './components/Snowfall.vue'
+import { Song } from './components/FloatingMusicPlayer/types'
 
-.content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}
+import GIf from '/images/1000041266.gif'
+import GIf1 from '/images/fd.gif'
 
-.section {
-  h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
+// 定义歌曲列表
+const songs: Song[] = [
+  // {
+  //   id: 1,
+  //   title: '于是',
+  //   artist: '郑润泽',
+  //   src: '/music/于是.mp3',
+  //   cover: '/images/于是.jpg',
+  //   lrcFile: '/music/于是.lrc'
+  // },
+  {
+    id: 2,
+    title: '记得吗 忘了吧',
+    artist: '安杨',
+    src: '/music/安扬 - 记得吗 忘了吧.flac',
+    cover: '/images/wlm.png',
+    lrcFile: '/music/记得吗 忘了吧-安扬.lrc'
+  },
+  {
+    id: 3,
+    title: 'Time is broken',
+    artist: 'Eddie Chen',
+    src: '/music/Eddie Chen - Time is broken.flac',
+    cover: '/images/Eddie Chen - Time is broken.jpg',
+    lrcFile: '/music/Eddie Chen - Time is broken.lrc'
   }
+]
 
-  h2 {
-    font-size: 2em;
-    margin-bottom: 30px;
-  }
-}
+onMounted(() => {
+  // 如果需要手动触发动画，可以使用:
+  // entranceAnimation.value?.startAnimation()
+})
+</script>
 
-.intro {
-  margin-top: 40px;
-  h3 {
-    background: linear-gradient(45deg, #00b4d8, #90e0ef);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    transition: background 0.5s ease;
-  }
-  p {
-    font-size: 1.2em;
-    color: #666;
-  }
-}
-
-.blog-list, .project-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
-}
-
-.blog-item, .project-item {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-
-  h3 {
-    margin-bottom: 10px;
-    color: #333;
-    min-height: 1.5em;
-  }
-
-  p {
-    color: #666;
-    margin-bottom: 15px;
-    min-height: 3em;
-  }
-
-  .date {
-    color: #999;
-    font-size: 0.9em;
-  }
-}
-
-// 添加博客标签样式
-.blog-footer {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  
-  .tag {
-    background: linear-gradient(45deg, rgba(0, 180, 216, 0.1), rgba(144, 224, 239, 0.2));
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    color: #00b4d8;
-    border: 1px solid rgba(0, 180, 216, 0.3);
-  }
-}
-
-.scroll-down-btn {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: transparent;
-  bottom: 40px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: transparent;
-  transform: translateX(-50%);
-  cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    // 向下
-    transform: translateX(-50%) translateY(5px);
-    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.5);
-  }
-
-  .arrow {
-    width: 20px;
-    height: 20px;
-    border-left: 3px solid rgba(0, 180, 216, 0.8);
-    border-bottom: 3px solid rgba(0, 180, 216, 0.8);
-    transform: rotate(-45deg);
-    position: relative;
-    top: -3px;
-    animation: arrow-bounce 1.5s infinite;
-  }
-}
-
-@keyframes arrow-bounce {
-  0%, 100% { transform: rotate(-45deg) translateY(0); }
-  50% { transform: rotate(-45deg) translateY(5px); }
-}
-
-.cursor {
-  background: linear-gradient(45deg, #00b4d8, #90e0ef);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: blink 1s infinite, gradient-pulse 2s infinite;
-  font-weight: bold;
-  margin-left: 2px;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-@keyframes gradient-pulse {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.tech-stack {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-
-  span {
-    background: #f0f0f0;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.9em;
-    color: #666;
-  }
-}
-
-.contact-info {
-  margin-top: 30px;
-  p {
-    font-size: 1.2em;
-    margin: 10px 0;
-    color: #666;
-  }
-}
-
-// 画布
-.background-container {
-  position: fixed;
-  top: 0;
-  left: 0;
+<style scoped>
+.app-container {
+  position: relative;
   width: 100%;
-  height: 100%;
-  z-index: -2;
-  background-image: url('/images/image.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.8;
-}
-
-.background-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  opacity: 0.6;
-}
-
-.background-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  background-image: url('/images/image.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-  // 加载状态样式
-.loading-container {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 0;
-  
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(0, 180, 216, 0.2);
-    border-radius: 50%;
-    border-top-color: #00b4d8;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+}
+.router-view {
+  flex: 1;
+  z-index: 1;
+}
+.gif-display {
+  position: fixed;
+  top: 5%;
+  right: 6%;
+  z-index: 0;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow:
+      0 0 10px rgba(0, 255, 255, 0.3),
+      0 0 30px rgba(0, 255, 255, 0.2);
+  padding: 8px;
+  transition: all 0.4s ease;
+  animation: float 5s ease-in-out infinite;
+}
+
+.gif-display1 {
+  position: fixed;
+  bottom: 5%;
+  right: 6%;
+  z-index: 0;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow:
+      0 0 10px rgba(0, 255, 255, 0.3),
+      0 0 30px rgba(0, 255, 255, 0.2);
+  padding: 8px;
+  transition: all 0.4s ease;
+  animation: float 5s ease-in-out infinite;
+  /* 添加轻微的动画延迟，使两个 GIF 的浮动不同步 */
+  animation-delay: 1s;
+}
+
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
   }
-  
-  p {
-    color: #666;
-    font-size: 1.1em;
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Sci-Fi 入场动画 */
+.sci-fi-entrance-enter-active {
+  animation: scifiEntrance 2.5s ease-out forwards;
 }
 
-// 错误信息样式
-.error-message {
-  text-align: center;
-  padding: 30px;
-  background: rgba(255, 235, 235, 0.8);
-  border-radius: 8px;
-  margin: 20px 0;
-  
-  p {
-    color: #e74c3c;
-    margin-bottom: 15px;
-    font-size: 1.1em;
+@keyframes scifiEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0) translateY(-50%);
+    filter: blur(15px) brightness(0.3);
   }
-  
-  .retry-button {
-    background: linear-gradient(45deg, #00b4d8, #90e0ef);
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 180, 216, 0.3);
-    }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05) translateY(-50%);
+    filter: blur(3px) brightness(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(-50%);
+    filter: blur(0) brightness(1);
   }
 }
 
-// 无数据状态
-.no-data {
-  text-align: center;
-  padding: 40px 0;
-  width: 100%;
+.gif-display:hover,
+.gif-display1:hover {
+  transform: scale(1.05);
+  box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.5),
+      0 0 40px rgba(0, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .gif-display,
+  .gif-display1 {
+    width: 220px;
+    height: 150px;
+  }
   
-  p {
-    color: #999;
-    font-size: 1.1em;
+  .gif-display {
+    top: 3%;
+    right: 4%;
+  }
+  
+  .gif-display1 {
+    bottom: 3%;
+    right: 4%;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 1rem;
+  }
+  
+  .gif-display,
+  .gif-display1 {
+    width: 180px;
+    height: 120px;
+    padding: 6px;
+  }
+  
+  .gif-display {
+    top: 2%;
+    right: 2%;
+  }
+  
+  .gif-display1 {
+    bottom: 2%;
+    right: 2%;
+  }
+  
+  .router-view {
+    margin: 0.5rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0 0.5rem;
+  }
+  
+  .gif-display,
+  .gif-display1 {
+    width: 140px;
+    height: 100px;
+    padding: 4px;
+    border-radius: 12px;
+  }
+  
+  .gif-display {
+    top: 1%;
+    right: 1%;
+  }
+  
+  .gif-display1 {
+    bottom: 1%;
+    right: 1%;
+  }
+  
+  .router-view {
+    margin: 0.25rem 0;
+  }
+  
+  /* 移动设备上调整动画效果 */
+  .gif-display:hover,
+  .gif-display1:hover {
+    transform: scale(1.02);
+  }
+}
+
+@media (max-width: 320px) {
+  .gif-display,
+  .gif-display1 {
+    display: none; /* 在极小屏幕上隐藏GIF显示 */
+  }
+  
+  .app-container {
+    padding: 0;
   }
 }
 </style>

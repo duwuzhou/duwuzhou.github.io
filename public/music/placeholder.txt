@@ -1,0 +1,7 @@
+这个文件夹用于存放音乐文件。
+
+请将您的音乐文件（如MP3格式）放在此文件夹中，并在FloatingMusicPlayer.vue组件中更新playlist数组以指向这些文件。
+
+示例：
+1. 将音乐文件 song1.mp3 放在此文件夹中
+2. 在FloatingMusicPlayer.vue中更新路径为 '/music/song1.mp3'
