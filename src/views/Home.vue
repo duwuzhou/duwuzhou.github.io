@@ -3,7 +3,11 @@
     <!-- 背景图片区域 -->
     <div class="hero-section">
       <div class="hero-background">
-        <img src="/images/1000041266.gif" alt="背景动画" />
+        <LazyImage
+          src="/images/1000041266.gif"
+          alt="背景动画"
+          loading="eager"
+        />
         <div class="hero-overlay"></div>
       </div>
 
@@ -95,6 +99,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import Typewriter from '@/components/Typewriter.vue'
+import LazyImage from '@/components/LazyImage.vue'
 
 // 技能数据
 const skills = ref([

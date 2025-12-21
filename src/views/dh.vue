@@ -2,7 +2,11 @@
   <div class="app-container">
     <!-- 背景图片 -->
     <div class="background-image">
-      <img src="/images/无限循环图片墙1080p%20.gif" alt="背景动画" />
+      <LazyImage
+        src="/images/无限循环图片墙1080p%20.gif"
+        alt="背景动画"
+        loading="eager"
+      />
       <div class="background-overlay"></div>
     </div>
 
@@ -33,6 +37,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import LazyImage from '@/components/LazyImage.vue'
 
 // 文字列表
 const textList = [
