@@ -1,5 +1,5 @@
 <template>
-  <div class="typewriter" :style="{ color, fontSize }">
+  <div class="typewriter" :style="{ color, fontSize }" :data-text="text">
     <span>{{ displayedText }}</span>
     <span class="cursor" :class="{ 'cursor-blink': showCursor }">|</span>
   </div>
@@ -83,6 +83,10 @@ watch(() => props.text, () => {
 <style scoped>
 .typewriter {
   display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .cursor {

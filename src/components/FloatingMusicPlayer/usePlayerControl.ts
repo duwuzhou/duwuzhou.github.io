@@ -329,6 +329,20 @@ export const usePlayerControl = () => {
     changeSong();
   };
   
+  // 定义可重复使用的事件处理函数
+  const onCanPlay = () => {
+    if (!audio) return;
+    
+    audio.play().then(() => {
+      isPlaying.value = true;
+    }).catch(err => {
+      console.warn('切歌自动播放被拦截:', err);
+    });
+    
+    // 移除事件监听器
+    audio.removeEventListener('canplay', onCanPlay);
+  };
+  
   const changeSong = () => {
     // 重置所有状态
     if (!audio) {
@@ -336,16 +350,19 @@ export const usePlayerControl = () => {
       return;
     }
     
+    // 先暂停当前播放
+    audio.pause();
+    
+    // 移除之前的事件监听器，避免重复调用
+    audio.removeEventListener('canplay', onCanPlay);
+    
     audio.src = currentSong.value.src;
     resetLyricsState();
     loadLyrics(currentSong.value);
   
     if (autoplay.value) {
-      audio.play().then(() => {
-        isPlaying.value = true;
-      }).catch(err => {
-        console.warn('切歌自动播放被拦截:', err);
-      });
+      // 添加事件监听器
+      audio.addEventListener('canplay', onCanPlay);
     } else {
       isPlaying.value = false;
     }

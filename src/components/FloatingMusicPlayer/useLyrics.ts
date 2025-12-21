@@ -77,22 +77,23 @@ export const useLyrics = () => {
     return map;
   };
 
-  // 优化歌词更新，节流滚动，避免卡顿
+  // 优化歌词更新，使用requestAnimationFrame提升流畅度
+  let animationFrameId: number | null = null;
   let lastScrollTime = 0;
-  const SCROLL_THROTTLE_MS = 200;
+  const SCROLL_THROTTLE_MS = 300;
 
   // 更新歌词显示
   const updateLyrics = (newCurrentTime: number, duration: number, showLyrics: boolean) => {
     // 更新本地时间ref
     currentTime.value = newCurrentTime;
-    
+
     if (lyricsMap.value.size === 0) {
       currentLyrics.value = [];
       return;
     }
 
     const currentSeconds = newCurrentTime;
-    
+
     // 只在歌词映射变化时重新排序
     if (sortedLyricsCache.length === 0 || sortedLyricsCache.length !== lyricsMap.value.size) {
       sortedLyricsCache = Array.from(lyricsMap.value.entries()).sort((a, b) => a[0] - b[0]);
@@ -113,8 +114,12 @@ export const useLyrics = () => {
 
       // 更新显示的歌词行
       currentLyrics.value = sortedLyricsCache.slice(Math.max(0, idx - 1), idx + 3).map(item => item[1]);
-      
-      updateCharacterDisplay();
+
+      // 使用requestAnimationFrame优化字符显示
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      animationFrameId = requestAnimationFrame(() => updateCharacterDisplay());
 
       const now = Date.now();
       if (showLyrics && lyricsContainer.value && now - lastScrollTime > SCROLL_THROTTLE_MS) {
@@ -122,7 +127,11 @@ export const useLyrics = () => {
         nextTick(scrollToCurrentLyric);
       }
     } else {
-      updateCharacterDisplay();
+      // 使用requestAnimationFrame优化字符显示
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      animationFrameId = requestAnimationFrame(() => updateCharacterDisplay());
     }
   };
 

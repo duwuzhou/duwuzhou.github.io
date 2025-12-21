@@ -4,7 +4,7 @@ import type { RouteRecordRaw } from 'vue-router'
 // 路由配置
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: () => import('../views/Home.vue')
   },
@@ -18,17 +18,23 @@ const routes: RouteRecordRaw[] = [
     name: 'about',
     component: () => import('../views/about.vue')
   },
+  // {
+  //   path: '/article',
+  //   name: 'article',
+  //   component: () => import('../views/article.vue')
+  // },
+  // {
+  //   path: '/article/:id',
+  //   name: 'article-detail',
+  //   component: () => import('../views/ArticleDetail.vue'),
+  //   props: true
+  // },
   {
-    path: '/article',
-    name: 'article',
-    component: () => import('../views/article.vue')
+    path: '/',
+    name: 'dh',
+    component: () => import('../views/dh.vue')
   },
-  {
-    path: '/article/:id',
-    name: 'article-detail',
-    component: () => import('../views/ArticleDetail.vue'),
-    props: true
-  }
+
 ]
 
 // 创建路由实例

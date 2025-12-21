@@ -6,7 +6,7 @@
       class="snowflake"
       :style="getFlakeStyle(flake)"
     >
-      ❄
+      {{ flake.symbol }}
     </div>
   </div>
 </template>
@@ -24,6 +24,7 @@ interface Snowflake {
   swing: number;
   swingSpeed: number;
   color: string;
+  symbol: string;
 }
 
 const flakes = ref<Snowflake[]>([]);
@@ -33,17 +34,19 @@ let animationFrameId: number;
 
 // 初始化雪花
 const initFlakes = () => {
+  const snowflakes = ['❄', '✲', '❅', '❆', '❈', '✻', '❊', '✼', '❉', '✺'];
   const flakeCount = Math.floor(containerWidth.value / 10); // 根据屏幕宽度调整雪花数量
   flakes.value = Array.from({ length: flakeCount }, (_, i) => ({
     id: i,
     x: Math.random() * containerWidth.value,
     y: Math.random() * -containerHeight.value,
     size: Math.random() * 30 + 5, // 5-15px
-    speed: Math.random() * 0.5 + 0.5, // 0.5-2px per frame
+    speed: Math.random() * 0.3 + 0.2, // 0.2-0.5px per frame (降低速度)
     opacity: Math.random() * 0.5 + 0.5, // 0.5-1
     swing: Math.random() * 100,
     swingSpeed: Math.random() * 0.02 + 0.01, // 0.01-0.03
-    color: Math.random() > 0.5 ? '#87CEEB' : '#fff' // 随机蓝色或白色
+    color: Math.random() > 0.5 ? '#87CEEB' : '#fff', // 随机蓝色或白色
+    symbol: snowflakes[Math.floor(Math.random() * snowflakes.length)] // 固定的雪花符号
   }));
 };
 

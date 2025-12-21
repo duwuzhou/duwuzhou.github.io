@@ -72,11 +72,11 @@ const goBack = () => {
 }
 
 // 根据文章标题获取文章详情
-const getArticleByTitle = (title: string): BlogArticle | undefined => {
+const getArticleByTitle = async (title: string): Promise<BlogArticle | undefined> => {
   // 在实际应用中，这里应该调用API获取具体文章详情
   // 现在我们使用测试数据来模拟
   const articles = fetchBlogArticles();
-  return articles.find(article => article.title === decodeURIComponent(title));
+  return (await articles).find(article => article.title === decodeURIComponent(title));
 }
 
 // 获取文章详情
