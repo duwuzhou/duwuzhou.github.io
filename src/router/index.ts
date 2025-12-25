@@ -18,17 +18,17 @@ const routes: RouteRecordRaw[] = [
     name: 'about',
     component: () => import('../views/about.vue')
   },
-  // {
-  //   path: '/article',
-  //   name: 'article',
-  //   component: () => import('../views/article.vue')
-  // },
-  // {
-  //   path: '/article/:id',
-  //   name: 'article-detail',
-  //   component: () => import('../views/ArticleDetail.vue'),
-  //   props: true
-  // },
+  {
+    path: '/articles',
+    name: 'articles',
+    component: () => import('../views/Articles.vue')
+  },
+  {
+    path: '/articles/:id',
+    name: 'article-detail',
+    component: () => import('../views/ArticleDetail.vue'),
+    props: true
+  },
   {
     path: '/',
     name: 'dh',

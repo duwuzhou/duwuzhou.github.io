@@ -117,6 +117,12 @@ const skills = ref([
 // 导航项数据
 const navItems = ref([
   {
+    path: '/articles',
+    icon: '📝',
+    title: '博客文章',
+    description: '阅读我的技术文章和经验分享'
+  },
+  {
     path: '/view1',
     icon: '📂',
     title: '我的项目',

@@ -26,6 +26,15 @@
             <div class="card-arrow">→</div>
           </div>
         </RouterLink>
+
+        <RouterLink to="/articles" class="nav-card articles-card" aria-label="博客文章">
+          <div class="card-inner">
+            <div class="card-icon">📝</div>
+            <h2 class="card-title">博客文章</h2>
+            <p class="card-description">技术分享与经验总结</p>
+            <div class="card-arrow">→</div>
+          </div>
+        </RouterLink>
       </nav>
     </main>
     

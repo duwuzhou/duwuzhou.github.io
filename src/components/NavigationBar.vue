@@ -16,6 +16,9 @@
           <RouterLink to="/home" class="nav-link">首页</RouterLink>
         </li>
         <li>
+          <RouterLink to="/articles" class="nav-link">博客</RouterLink>
+        </li>
+        <li>
           <RouterLink to="/about" class="nav-link">个人介绍</RouterLink>
         </li>
       </ul>
@@ -36,6 +39,9 @@
         </li>
         <li>
           <RouterLink to="/home" class="nav-link" @click="toggleMobileMenu">首页</RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/articles" class="nav-link" @click="toggleMobileMenu">博客</RouterLink>
         </li>
         <li>
           <RouterLink to="/about" class="nav-link" @click="toggleMobileMenu">个人介绍</RouterLink>
