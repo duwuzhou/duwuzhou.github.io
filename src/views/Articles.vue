@@ -131,20 +131,24 @@ const selectedTag = ref<string | null>(null)
 // 获取所有唯一标签
 const allTags = computed(() => {
   const tags = new Set<string>()
-  articles.value.forEach(article => {
-    article.tags.forEach(tag => tags.add(tag))
-  })
+  if (articles.value && Array.isArray(articles.value)) {
+    articles.value.forEach(article => {
+      if (article.tags && Array.isArray(article.tags)) {
+        article.tags.forEach(tag => tags.add(tag))
+      }
+    })
+  }
   return Array.from(tags).sort()
 })
 
 // 过滤文章
 const filteredArticles = computed(() => {
-  let result = articles.value
+  let result = articles.value || []
 
   // 按标签筛选
   if (selectedTag.value) {
     result = result.filter(article =>
-      article.tags.includes(selectedTag.value!)
+      article.tags && article.tags.includes(selectedTag.value!)
     )
   }
 
@@ -152,7 +156,7 @@ const filteredArticles = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(article =>
-      article.title.toLowerCase().includes(query)
+      article.title && article.title.toLowerCase().includes(query)
     )
   }
 
@@ -162,16 +166,26 @@ const filteredArticles = computed(() => {
 const fetchArticles = async () => {
   try {
     loading.value = true
+    error.value = ''
     const response = await articlesApi.getArticles({
       page: 1,
       pageSize: 50,
       sortBy: 'date',
       order: 'DESC'
     })
-    articles.value = response.data.data
+
+    // 确保响应数据结构正确
+    if (response && response.data && Array.isArray(response.data.data)) {
+      articles.value = response.data.data
+    } else {
+      console.error('Invalid response structure:', response)
+      articles.value = []
+      error.value = '数据格式错误'
+    }
   } catch (err) {
     error.value = '加载文章失败，请稍后重试'
-    console.error(err)
+    console.error('Failed to fetch articles:', err)
+    articles.value = []
   } finally {
     loading.value = false
   }

@@ -137,15 +137,32 @@ const generateToc = () => {
 const fetchArticle = async () => {
   try {
     loading.value = true
+    error.value = ''
     const id = Number(route.params.id)
-    const response = await articlesApi.getArticleById(id)
-    article.value = response.data
 
-    await nextTick()
-    generateToc()
-  } catch (err) {
-    error.value = '加载文章失败，请稍后重试'
-    console.error(err)
+    if (isNaN(id)) {
+      error.value = '无效的文章ID'
+      return
+    }
+
+    const response = await articlesApi.getArticleById(id)
+
+    // 确保响应数据结构正确
+    if (response && response.data) {
+      article.value = response.data
+      await nextTick()
+      generateToc()
+    } else {
+      console.error('Invalid response structure:', response)
+      error.value = '数据格式错误'
+    }
+  } catch (err: any) {
+    if (err.response?.status === 404) {
+      error.value = '文章不存在'
+    } else {
+      error.value = '加载文章失败，请稍后重试'
+    }
+    console.error('Failed to fetch article:', err)
   } finally {
     loading.value = false
   }
