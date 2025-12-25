@@ -281,11 +281,11 @@ const socialLinks = ref([
   position: relative;
   text-transform: uppercase;
   letter-spacing: 3px;
-  background: linear-gradient(135deg, rgba(220, 220, 220, 0.95) 0%, rgba(180, 180, 180, 0.9) 100%);
+  background: linear-gradient(135deg, #64c8ff 0%, #00bfff 50%, #64c8ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+  filter: drop-shadow(0 0 15px rgba(100, 200, 255, 0.5));
 }
 
 .section-title::after {
@@ -332,7 +332,7 @@ const socialLinks = ref([
 }
 
 .about-text {
-  color: rgba(200, 200, 200, 0.9);
+  color: rgba(180, 220, 255, 0.9);
   line-height: 2;
   font-size: 1.1rem;
 }
@@ -342,9 +342,9 @@ const socialLinks = ref([
 }
 
 .about-text strong {
-  color: rgba(100, 200, 255, 0.9);
+  color: rgba(100, 200, 255, 1);
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(100, 200, 255, 0.25);
+  text-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
 }
 
 /* 技能网格 */
@@ -419,15 +419,15 @@ const socialLinks = ref([
 }
 
 .skill-info h4 {
-  color: rgba(230, 230, 230, 0.95);
+  color: rgba(100, 200, 255, 0.95);
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0 0 0.75rem 0;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  text-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
 }
 
 .skill-info p {
-  color: rgba(160, 160, 160, 0.85);
+  color: rgba(180, 220, 255, 0.85);
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
@@ -484,7 +484,7 @@ const socialLinks = ref([
 }
 
 .hobby-text {
-  color: rgba(210, 210, 210, 0.9);
+  color: rgba(100, 200, 255, 0.9);
   font-size: 1.1rem;
   font-weight: 600;
 }

@@ -1,5 +1,9 @@
 <template>
   <div class="profile-card" :class="{ 'mobile': isMobile }">
+    <div class="profile-background">
+      <img src="/images/gzr.gif" alt="背景" class="background-image" />
+      <div class="background-overlay"></div>
+    </div>
     <div class="profile-header">
       <div class="profile-avatar">
         <img 
@@ -123,6 +127,45 @@ const onUnmounted = () => {
   overflow: hidden;
 }
 
+/* 背景图片层 */
+.profile-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.15;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile-card:hover .background-image {
+  opacity: 0.25;
+  transform: scale(1.05);
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 20, 0.7) 0%,
+    rgba(30, 30, 30, 0.6) 100%
+  );
+  backdrop-filter: blur(2px);
+}
+
 .profile-card::before {
   content: '';
   position: absolute;
@@ -232,17 +275,17 @@ const onUnmounted = () => {
   font-size: 2.5rem;
   font-weight: 900;
   margin: 0 0 1rem;
-  background: linear-gradient(135deg, rgba(230, 230, 230, 0.95) 0%, rgba(180, 180, 180, 0.9) 100%);
+  background: linear-gradient(135deg, #64c8ff 0%, #00bfff 50%, #64c8ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 1px;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+  filter: drop-shadow(0 0 12px rgba(100, 200, 255, 0.4));
 }
 
 .profile-title {
   font-size: 1.3rem;
-  color: rgba(180, 180, 180, 0.9);
+  color: rgba(100, 200, 255, 0.9);
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   background: rgba(60, 60, 60, 0.4);
@@ -261,7 +304,7 @@ const onUnmounted = () => {
 .profile-bio {
   font-size: 1.15rem;
   line-height: 2;
-  color: rgba(200, 200, 200, 0.9);
+  color: rgba(180, 220, 255, 0.9);
   margin: 0 0 2.5rem;
 }
 
@@ -274,8 +317,8 @@ const onUnmounted = () => {
 
 .tag {
   background: rgba(60, 60, 60, 0.4);
-  border: 2px solid rgba(80, 80, 80, 0.5);
-  color: rgba(200, 200, 200, 0.9);
+  border: 2px solid rgba(100, 200, 255, 0.3);
+  color: rgba(100, 200, 255, 0.9);
   padding: 0.75rem 1.5rem;
   border-radius: 30px;
   font-size: 1rem;
@@ -303,11 +346,11 @@ const onUnmounted = () => {
 }
 
 .tag:hover {
-  background: rgba(100, 200, 255, 0.25);
-  border-color: rgba(100, 200, 255, 0.6);
-  color: rgba(100, 200, 255, 0.95);
+  background: rgba(100, 200, 255, 0.3);
+  border-color: rgba(100, 200, 255, 0.8);
+  color: rgba(100, 200, 255, 1);
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(100, 200, 255, 0.25);
+  box-shadow: 0 10px 25px rgba(100, 200, 255, 0.35);
 }
 
 /* 底部 */
@@ -330,8 +373,8 @@ const onUnmounted = () => {
   align-items: center;
   gap: 0.75rem;
   background: rgba(60, 60, 60, 0.4);
-  border: 2px solid rgba(80, 80, 80, 0.5);
-  color: rgba(200, 200, 200, 0.9);
+  border: 2px solid rgba(100, 200, 255, 0.3);
+  color: rgba(100, 200, 255, 0.9);
   padding: 1rem 2rem;
   border-radius: 50px;
   text-decoration: none;
@@ -341,11 +384,11 @@ const onUnmounted = () => {
 }
 
 .social-link:hover {
-  background: rgba(100, 200, 255, 0.2);
-  border-color: rgba(100, 200, 255, 0.5);
-  color: rgba(100, 200, 255, 0.95);
+  background: rgba(100, 200, 255, 0.25);
+  border-color: rgba(100, 200, 255, 0.7);
+  color: rgba(100, 200, 255, 1);
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(100, 200, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(100, 200, 255, 0.3);
 }
 
 .social-icon {

@@ -207,7 +207,7 @@ onUnmounted(() => {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hero-background img {
+.hero-background :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -218,7 +218,7 @@ onUnmounted(() => {
   transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hero-section:hover .hero-background img {
+.hero-section:hover .hero-background :deep(img) {
   filter: blur(8px);
   transform: scale(1.05);
 }
