@@ -174,9 +174,12 @@ const fetchArticles = async () => {
       order: 'DESC'
     })
 
-    // 确保响应数据结构正确
-    if (response && response.data && Array.isArray(response.data.data)) {
-      articles.value = response.data.data
+    // axios 拦截器已经返回了 response.data
+    // 所以 response 就是后端的响应体: { success, data, pagination }
+    console.log('API Response:', response)
+
+    if (response && response.data && Array.isArray(response.data)) {
+      articles.value = response.data
     } else {
       console.error('Invalid response structure:', response)
       articles.value = []
